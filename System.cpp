@@ -3,6 +3,7 @@
 #include "User.h"
 #include <sstream>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -15,17 +16,17 @@ SocialGroup System::findUserGroup(User u)
     {
         switch ((*i).getCategory())
         {
-            case 0:
-                quantityOfForLower++;
-                break;
-            case 1:
-                quantityOfForMiddle++;
-                break;
-            case 2:
-                quantityOfforUpper++;
-                break;
-            default:
-                break;
+        case 0:
+            quantityOfForLower++;
+            break;
+        case 1:
+            quantityOfForMiddle++;
+            break;
+        case 2:
+            quantityOfforUpper++;
+            break;
+        default:
+            break;
         }
     }
 
@@ -36,8 +37,18 @@ SocialGroup System::findUserGroup(User u)
     if (maxQuantity == quantityOfForLower) { return Upper; }
 }
 
+void System::updateSystem()
+{
+    unordered_map<int, User*> oldUserBase = _UserBase;
+    for (auto i = oldUserBase.begin(); i != oldUserBase.end(); i++)
+    {
+        addUser(*(i->second));
+    }
+}
+
 System::System()
 {
+    cout << "Default constructor for System\n";
 }
 
 System::System(string MarketPath, vector<string> UserBasePath)
@@ -82,11 +93,12 @@ System::System(string MarketPath, vector<string> UserBasePath)
         getline(inputString, buffer, ',');
         category = Category(atoi(buffer.c_str()));
         buffer = "";
-        
+
         Product TempProduct(name, id, price, discount, category);
         _Market.insert(pair<int, Product>(id, TempProduct));
         line = "";
     }
+    cout << "Constructor with parametrs for System\n";
     InputFile.close();
 }
 
@@ -104,20 +116,20 @@ Product& System::getProductById(int id)
 
 System& System::addUser(const User u)
 {
-	switch (findUserGroup(u))
-	{
-		case Lower: // new user belongs to lower class
-            _UserBase.insert(pair<int, User*>(u.getPhone(), new LowerClass(u)));
-			break;
-		case Middle:                    // middle class
-            _UserBase.insert(pair<int, User*>(u.getPhone(), new MiddleClass(u)));
-			break;
-		case Upper:                     // upper class
-            _UserBase.insert(pair<int, User*>(u.getPhone(), new UpperClass(u)));
-			break;
-        default:
-            break;
-	}	
+    switch (findUserGroup(u))
+    {
+    case Lower: // new user belongs to lower class
+        _UserBase.insert(pair<int, User*>(u.getPhone(), new LowerClass(u)));
+        break;
+    case Middle:                    // middle class
+        _UserBase.insert(pair<int, User*>(u.getPhone(), new MiddleClass(u)));
+        break;
+    case Upper:                     // upper class
+        _UserBase.insert(pair<int, User*>(u.getPhone(), new UpperClass(u)));
+        break;
+    default:
+        break;
+    }
 
     list<Product> uShopList = u.getShoppingList();
     for (auto i = uShopList.begin(); i != uShopList.end(); i++)
@@ -128,40 +140,137 @@ System& System::addUser(const User u)
     return *this;
 }
 
-//vector<User> System::getLowerClass() const
-//{
-//    return {};
-//}
-//vector<User> System::getMiddleClass() const
-//{
-//    return {};
-//}
-//vector<User> System::getUpperClass() const
-//{
-//    return {};
-//}
-//
-//vector<Product> System::getPopularProductForLower() const
-//{
-//    return {};
-//}
-//vector<Product> System::getPopularProductForMiddle() const
-//{
-//    return {};
-//}
-//vector<Product> System::getPopularProductForUpper() const
-//{
-//    return {};
-//}
+
+vector<User> System::getLowerClass()
+{
+    updateSystem();
+    vector<User> lowerClass;
+
+    for (auto i = _UserBase.begin(); i != _UserBase.end(); i++)
+    {
+        if ((i->second)->getGroup() != Lower) { continue; }
+        lowerClass.push_back(*(i->second));
+    }
+
+    return lowerClass;
+}
+vector<User> System::getMiddleClass()
+{
+    updateSystem();
+    vector<User> middleClass;
+
+    for (auto i = _UserBase.begin(); i != _UserBase.end(); i++)
+    {
+        if ((i->second)->getGroup() != Middle) { continue; }
+        middleClass.push_back(*(i->second));
+    }
+
+    return middleClass;
+}
+vector<User> System::getUpperClass()
+{
+    updateSystem();
+    vector<User> upperClass;
+
+    for (auto i = _UserBase.begin(); i != _UserBase.end(); i++)
+    {
+        if ((i->second)->getGroup() != Upper) { continue; }
+        upperClass.push_back(*(i->second));
+    }
+
+    return upperClass;
+}
+
+
+vector<pair<int, Product>> System::getPopularProductForLower()
+{
+    updateSystem();
+    unordered_map<int, pair<Product, int>> productsWithPopularity;
+
+    for (auto i = _Market.begin(); i != _Market.end(); i++)
+    {
+        pair<int, Product> idAndProd = *i;
+        productsWithPopularity.insert(pair<int, pair<Product, int>>(idAndProd.first, pair<Product, int>(idAndProd.second, 0)));
+    }
+
+    for (auto i = _UserBase.begin(); i != _UserBase.end(); i++)
+    {
+        if ((i->second)->getGroup() != Lower) { continue; }
+        for (int j = 0; j < (i->second)->getSizeOfShoppingList(); j++)
+        {
+            productsWithPopularity[(*(i->second))[j].getId()].second++;
+        }
+    }
+
+    vector<pair<int, Product>> sortedVector;
+    for (auto i = productsWithPopularity.begin(); i != productsWithPopularity.end(); i++)
+    {
+        sortedVector.push_back(pair<int, Product>((i->second).second, (i->second).first));
+    }
+    sort(sortedVector.begin(), sortedVector.end());
+    return sortedVector;
+}
+vector<pair<int, Product>> System::getPopularProductForMiddle()
+{
+    updateSystem();
+    unordered_map<int, pair<Product, int>> productsWithPopularity;
+
+    for (auto i = _Market.begin(); i != _Market.end(); i++)
+    {
+        pair<int, Product> idAndProd = *i;
+        productsWithPopularity.insert(pair<int, pair<Product, int>>(idAndProd.first, pair<Product, int>(idAndProd.second, 0)));
+    }
+
+    for (auto i = _UserBase.begin(); i != _UserBase.end(); i++)
+    {
+        if ((i->second)->getGroup() != Middle) { continue; }
+        for (int j = 0; j < (i->second)->getSizeOfShoppingList(); j++)
+        {
+            productsWithPopularity[(*(i->second))[j].getId()].second++;
+        }
+    }
+
+    vector<pair<int, Product>> sortedVector;
+    for (auto i = productsWithPopularity.begin(); i != productsWithPopularity.end(); i++)
+    {
+        sortedVector.push_back(pair<int, Product>((i->second).second, (i->second).first));
+    }
+    sort(sortedVector.begin(), sortedVector.end());
+    return sortedVector;
+}
+vector<pair<int, Product>> System::getPopularProductForUpper()
+{
+    updateSystem();
+    unordered_map<int, pair<Product, int>> productsWithPopularity;
+
+    for (auto i = _Market.begin(); i != _Market.end(); i++)
+    {
+        pair<int, Product> idAndProd = *i;
+        productsWithPopularity.insert(pair<int, pair<Product, int>>(idAndProd.first, pair<Product, int>(idAndProd.second, 0)));
+    }
+
+    for (auto i = _UserBase.begin(); i != _UserBase.end(); i++)
+    {
+        if ((i->second)->getGroup() != Upper) { continue; }
+        for (int j = 0; j < (i->second)->getSizeOfShoppingList(); j++)
+        {
+            productsWithPopularity[(*(i->second))[j].getId()].second++;
+        }
+    }
+
+    vector<pair<int, Product>> sortedVector;
+    for (auto i = productsWithPopularity.begin(); i != productsWithPopularity.end(); i++)
+    {
+        sortedVector.push_back(pair<int, Product>((i->second).second, (i->second).first));
+    }
+    sort(sortedVector.begin(), sortedVector.end());
+    return sortedVector;
+}
+
 
 User& System::getUserByPhone(int phone)
 {
     return *(_UserBase.at(phone));
-}
-
-vector<Product> System::getProductsByPopularity() const
-{
-    return {};
 }
 
 void System::getSocialGroups() const
@@ -175,4 +284,5 @@ System::~System()
     {
         delete i->second;
     }
+    cout << "Destructor for System\n";
 }

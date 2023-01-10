@@ -9,6 +9,7 @@
 
 User::User() : _name(""), _mobilePhone(0)
 {
+	cout << "Default constructor from User\n";
 	//objectCount++;
 }
 
@@ -20,6 +21,7 @@ User::User(string name, int mobilePhone) :
 User::User(string name, int mobilePhone, list<Product> shoppingList) :
 	_name(name), _mobilePhone(mobilePhone), _shoppingList(shoppingList)
 {
+	cout << "Constructor with parameters from User\n";
 }
 
 User::User(string filepath)
@@ -114,6 +116,11 @@ list<Product> User::getShoppingList() const
 	return _shoppingList;
 }
 
+int User::getSizeOfShoppingList() const
+{
+	return _shoppingList.size();
+}
+
 
 void User::print() const
 {
@@ -122,4 +129,21 @@ void User::print() const
 	for (auto i = _shoppingList.begin(); i != _shoppingList.end(); i++) {
 		cout << *i << endl;
 	}
+}
+
+bool User::operator==(const User& other) const
+{
+	return (this->_mobilePhone == other._mobilePhone);
+}
+
+bool User::operator!=(const User& other) const
+{
+	return (this->_mobilePhone != other._mobilePhone);
+}
+
+Product& User::operator[](int pos)
+{
+	auto it = _shoppingList.begin();
+	for (int i = 0; i != pos; i++, it++);
+	return *it;
 }

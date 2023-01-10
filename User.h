@@ -3,6 +3,7 @@
 
 #include "Product.h"
 #include <list>
+#include <iostream>
 using namespace std;
 
 enum SocialGroup { Lower = 0, Middle = 1, Upper = 2, Undefined = 3 };
@@ -14,7 +15,7 @@ protected:
 	int _mobilePhone;
 	list<Product> _shoppingList;
 public:
-	
+
 	User();
 	User(string name, int mobilePhone);
 	User(string name, int mobilePhone, list<Product> shoppingList);
@@ -27,18 +28,26 @@ public:
 	int getPhone() const;
 	User& addItemToList(Product item);
 	list<Product> getShoppingList() const;
+
+	int getSizeOfShoppingList() const;
+
 	void print() const;
-	bool operator ==(const User& other) {
-		return (this->_mobilePhone == other._mobilePhone);
+
+
+	User& operator= (const User& u)
+	{
+		if (u == *this) { return *this; }
+		_name = u.getName();
+		_mobilePhone = u.getPhone();
+		_shoppingList = u.getShoppingList();
+
+		return *this;
 	}
-	bool operator !=(const User& other) {
-		return (this->_mobilePhone != other._mobilePhone);
-	}
-	Product& operator [](int pos) {
-		auto it = _shoppingList.begin();
-		for (int i = 0; i > pos; i++, it++);
-		return *it;
-	}
+
+
+	bool operator ==(const User& other) const;
+	bool operator !=(const User& other) const;
+	Product& operator [](int pos);
 };
 
 class LowerClass : public User
