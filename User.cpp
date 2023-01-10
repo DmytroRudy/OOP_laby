@@ -17,7 +17,9 @@ User::User(string name, int mobilePhone) :
 	_name(name), _mobilePhone(mobilePhone)
 {
 }
-
+User::User(User& const other) {
+	this->_mobilePhone = other._mobilePhone;
+}
 User::User(string name, int mobilePhone, list<Product> shoppingList) :
 	_name(name), _mobilePhone(mobilePhone), _shoppingList(shoppingList)
 {
@@ -80,7 +82,11 @@ User::User(string filepath)
 }
 
 
-SocialGroup User::getGroup() { return Undefined; }
+SocialGroup User::getGroup() { 
+	cout << "Parents class function" << endl;
+	return Undefined; 
+}
+
 
 
 User& User::setName(string name)

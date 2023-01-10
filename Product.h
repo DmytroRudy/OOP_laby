@@ -41,6 +41,7 @@ public:
 	}
 
 	bool operator < (const Product& other) const;
+	Product& operator + (const Product& other);
 };
 
 #endif

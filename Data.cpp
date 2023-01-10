@@ -152,10 +152,26 @@ public:
 		this->dayChecker();
 		return *this;
 	}
+	Data& operator --() {
+		Day--;
+		this->dayChecker();
+		return *this;
+	}
+	Data operator ++(int param) {
+		
+		Data data2(*this);
+		Day++;
+		this->dayChecker();
+		return data2;
+	}
 	friend std::ostream& operator << (std::ostream& os, const Data& cur) {
 		os << cur.Day << "." << cur.Month << "." << cur.Year << std::endl;
 		return os;
 	}
-
+	friend std::istream& operator >> (std::istream& is, Data& cur) {
+		is >> cur.Day >> cur.Month >> cur.Year;
+		return is;
+	}
+	
 	~Data() {}
 };

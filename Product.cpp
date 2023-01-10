@@ -82,6 +82,12 @@ bool Product::operator<(const Product& other) const
 	return (this->_price < other._price);
 }
 
+Product& Product::operator+(const Product& other)
+{
+	Product result(this->_name + other._name, this->_id + other._id, this->_price + other._price, 0, this->_сategory);
+	return result;
+}
+
 float Product::getRealPrice() const
 {
 	return _price * (1 - _discount);

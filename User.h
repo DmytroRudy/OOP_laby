@@ -15,12 +15,17 @@ protected:
 	int _mobilePhone;
 	list<Product> _shoppingList;
 public:
-
+	User(User& const other);
 	User();
 	User(string name, int mobilePhone);
 	User(string name, int mobilePhone, list<Product> shoppingList);
 	User(string filepath);
-
+	User(const User& u)
+	{
+		_name = u.getName();
+		_mobilePhone = u.getPhone();
+		_shoppingList = u.getShoppingList();
+	}
 	virtual SocialGroup getGroup();
 	User& setName(string name);
 	string getName() const;
@@ -59,7 +64,10 @@ public:
 		_mobilePhone = u.getPhone();
 		_shoppingList = u.getShoppingList();
 	}
-	SocialGroup getGroup() { return Lower; }
+	SocialGroup getGroup() {
+		cout << "Lower class function" << endl;
+		return Lower;
+	}
 };
 
 class MiddleClass : public User
@@ -71,7 +79,10 @@ public:
 		_mobilePhone = u.getPhone();
 		_shoppingList = u.getShoppingList();
 	}
-	SocialGroup getGroup() { return Middle; }
+	SocialGroup getGroup() { 
+		cout << "Midlle class function" << endl;
+		return Middle;
+	}
 };
 
 class UpperClass : public User
@@ -83,7 +94,10 @@ public:
 		_mobilePhone = u.getPhone();
 		_shoppingList = u.getShoppingList();
 	}
-	SocialGroup getGroup() { return Upper; }
+	SocialGroup getGroup() { 
+		cout << "Midlle class function" << endl;
+		return Upper;
+	}
 };
 
 #endif

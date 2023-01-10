@@ -47,7 +47,7 @@ int main()
 	System s;
 	s.addUser(u1);
 	s.addUser(u3);
-
+	User(LowerClass(u3));
 	cout << "\nData demo\n";
 	Data data;
 	cout << data;
@@ -58,4 +58,10 @@ int main()
 	cout << "Static member demo\n";
 	cout << data.objectCount << "\n";
 	cout << data.objectCount << "\n";
+	Data data3;
+	cin >> data3;
+	cout << data3;
+	cout << u3.getGroup() << endl;
+	LowerClass u3Lower(u3);
+	cout << u3Lower.getGroup() << endl;
 }
